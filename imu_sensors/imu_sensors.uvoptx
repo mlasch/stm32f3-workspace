@@ -161,18 +161,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>200</LineNumber>
+          <LineNumber>28</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219198</Address>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\user_files\src\system_stm32f3xx.c</Filename>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\user_files\src\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\imu_sensors\user_files/src/system_stm32f3xx.c\200</Expression>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -180,6 +180,11 @@
           <count>0</count>
           <WinNumber>1</WinNumber>
           <ItemText>SystemCoreClock,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>1</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>hclk_freq</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
