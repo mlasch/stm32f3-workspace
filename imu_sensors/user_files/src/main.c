@@ -1,7 +1,14 @@
 #include <stm32f3xx.h>
+#include <cmsis_os.h>
+
+#include <lsm303dlhc.h>
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
+
+extern uint32_t counter;
+
+void Init_Timers(void);
 
 int main() {
 	GPIO_InitTypeDef GPIO_InitDef;
@@ -10,6 +17,12 @@ int main() {
 	SystemCoreClockUpdate();
 	
 	HAL_Init();
+	
+	/* driver init */
+	lsm303dlhc_init();
+	
+	osKernelInitialize();
+	Init_Timers();
 	
 	// enable clock for GPIOE
 	__HAL_RCC_GPIOE_CLK_ENABLE();
@@ -24,11 +37,7 @@ int main() {
 	// set LD3
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
 	
-	while(1) {
-		HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_9);
-		HAL_Delay(200);	//delay for 200ms
-	}
-	
+	osKernelStart();
 }
 
 /**
