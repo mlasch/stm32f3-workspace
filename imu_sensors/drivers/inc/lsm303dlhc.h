@@ -5,8 +5,10 @@
 #include <stm32f3xx.h>
 
 #define LSM303DLHC_PORT		GPIOB
+#define LSM303DLHC_INT_PORT		GPIOE
 #define LSM303DLHC_GPIO_AF	GPIO_AF4_I2C1
 #define LINACCEL_GPIO_CLK_ENABLE()	__HAL_RCC_GPIOB_CLK_ENABLE()
+#define LINACCEL_INT_CLK_ENABLE()	__HAL_RCC_GPIOE_CLK_ENABLE()
 
 #define LSM303DLHC_I2C I2C1
 #define LSM303DLHC_SCL_PIN	GPIO_PIN_6
@@ -66,5 +68,7 @@
 
 
 extern I2C_HandleTypeDef I2C1_Handle;
+extern uint8_t accelBuffer[6];
 
 void lsm303dlhc_init(void);
+void readAccel(void);

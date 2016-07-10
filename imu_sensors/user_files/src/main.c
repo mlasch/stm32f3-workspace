@@ -1,6 +1,7 @@
 #include <stm32f3xx.h>
 #include <cmsis_os.h>
 
+#include <threads.h>
 #include <lsm303dlhc.h>
 
 static void SystemClock_Config(void);
@@ -9,6 +10,8 @@ static void Error_Handler(void);
 extern uint32_t counter;
 
 void Init_Timers(void);
+
+osThreadDef(handlerThread, osPriorityAboveNormal, 1, 0);
 
 int main() {
 	GPIO_InitTypeDef GPIO_InitDef;
@@ -23,6 +26,10 @@ int main() {
 	
 	osKernelInitialize();
 	Init_Timers();
+	
+	
+	handlerThread_id = osThreadCreate(osThread(handlerThread), NULL);
+	
 	
 	// enable clock for GPIOE
 	__HAL_RCC_GPIOE_CLK_ENABLE();

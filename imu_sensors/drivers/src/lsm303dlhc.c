@@ -9,21 +9,32 @@ I2C_HandleTypeDef I2C1_Handle;
  */
 static void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c);
 static uint8_t lsm303dlhc_read_reg(uint16_t addr, uint8_t reg);
-static void lsm303dlhc_write_reg(void);
+static void lsm303dlhc_write_reg(uint16_t addr, uint8_t reg, uint8_t value);
+
+uint8_t accelBuffer[6];
+
+void readAccel() {
+	const uint8_t startAddr = OUT_X_L_A | 0x80;		// sub-address and MSB = 1 for auto increment
+
+	HAL_I2C_Mem_Read(&I2C1_Handle, LINACCEL_I2C_ADDRESS, startAddr, I2C_MEMADD_SIZE_8BIT, accelBuffer, 6, LSM303DLHC_I2C_TIMEOUT);
+}
 
 void lsm303dlhc_init() {
-	uint32_t buffer;
 	
 	/* lowlevel init */
 	HAL_I2C_MspInit(&I2C1_Handle);
 	
-	buffer = lsm303dlhc_read_reg(LINACCEL_I2C_ADDRESS, CTRL_REG1_A);
-	buffer = lsm303dlhc_read_reg(GYRO_I2C_ADDRESS, 0x0c);
+	lsm303dlhc_write_reg(LINACCEL_I2C_ADDRESS, CTRL_REG1_A, 0x27);		// 50 Hz, all Axes enabled
+	lsm303dlhc_write_reg(LINACCEL_I2C_ADDRESS, CTRL_REG3_A, 0x10);
+	lsm303dlhc_write_reg(LINACCEL_I2C_ADDRESS, CTRL_REG4_A, 0x44);
+	
+	readAccel();
 }
 
 static void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
+
 	
 	LINACCEL_GPIO_CLK_ENABLE();
 	
@@ -34,6 +45,20 @@ static void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
   GPIO_InitStructure.Alternate = LSM303DLHC_GPIO_AF;
   HAL_GPIO_Init(LSM303DLHC_PORT, &GPIO_InitStructure);
 	
+	LINACCEL_INT_CLK_ENABLE();
+	
+	GPIO_InitStructure.Pin = GPIO_PIN_4;
+	GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitStructure.Pull = GPIO_NOPULL;
+  GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(LSM303DLHC_INT_PORT, &GPIO_InitStructure);
+	
+	HAL_NVIC_SetPriority(EXTI4_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+	
+	
+	LINACCEL_I2C_CLK_ENABLE();
+	
 	hi2c->Instance = LSM303DLHC_I2C;
   hi2c->Init.OwnAddress1 =  LINACCEL_I2C_ADDRESS;
   hi2c->Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -41,9 +66,6 @@ static void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
   hi2c->Init.OwnAddress2 = 0;
   hi2c->Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
   hi2c->Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;	
-	
-	LINACCEL_I2C_CLK_ENABLE();
-	
 	HAL_I2C_Init(hi2c);
 	
 }
@@ -57,6 +79,8 @@ static uint8_t lsm303dlhc_read_reg(uint16_t addr, uint8_t reg) {
 	return value;
 }
 
-static void lsm303dlhc_write_reg(void) {
+static void lsm303dlhc_write_reg(uint16_t addr, uint8_t reg, uint8_t value) {
+	HAL_StatusTypeDef status = HAL_OK;
 	
+	status = HAL_I2C_Mem_Write(&I2C1_Handle, addr, (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, &value, 1, LSM303DLHC_I2C_TIMEOUT);
 }
