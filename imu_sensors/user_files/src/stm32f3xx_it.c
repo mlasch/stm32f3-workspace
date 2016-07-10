@@ -183,6 +183,7 @@ void DebugMon_Handler(void)
 
 void EXTI4_IRQHandler(void) {
 	__HAL_GPIO_EXTI_CLEAR_FLAG(GPIO_PIN_4);
+	
 	osSignalSet(handlerThread_id, 0x01);
 }
 

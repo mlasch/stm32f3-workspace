@@ -26,7 +26,7 @@ void lsm303dlhc_init() {
 	
 	lsm303dlhc_write_reg(LINACCEL_I2C_ADDRESS, CTRL_REG1_A, 0x27);		// 50 Hz, all Axes enabled
 	lsm303dlhc_write_reg(LINACCEL_I2C_ADDRESS, CTRL_REG3_A, 0x10);
-	lsm303dlhc_write_reg(LINACCEL_I2C_ADDRESS, CTRL_REG4_A, 0x44);
+	lsm303dlhc_write_reg(LINACCEL_I2C_ADDRESS, CTRL_REG4_A, 0x88);
 	
 	readAccel();
 }

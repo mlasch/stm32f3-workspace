@@ -12,6 +12,8 @@ extern uint32_t counter;
 void Init_Timers(void);
 
 osThreadDef(handlerThread, osPriorityAboveNormal, 1, 0);
+osThreadDef(visioThread, osPriorityNormal, 1, 0);
+osMutexDef (accelBuffer_mutex);
 
 int main() {
 	GPIO_InitTypeDef GPIO_InitDef;
@@ -29,7 +31,8 @@ int main() {
 	
 	
 	handlerThread_id = osThreadCreate(osThread(handlerThread), NULL);
-	
+	visioThread_id = osThreadCreate(osThread(visioThread), NULL);
+	accelBuffer_mutex_id = osMutexCreate(osMutex(accelBuffer_mutex));
 	
 	// enable clock for GPIOE
 	__HAL_RCC_GPIOE_CLK_ENABLE();
