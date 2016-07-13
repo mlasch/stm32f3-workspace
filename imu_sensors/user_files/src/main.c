@@ -3,6 +3,7 @@
 
 #include <threads.h>
 #include <lsm303dlhc.h>
+#include <l3gd20.h>
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
@@ -12,8 +13,10 @@ extern uint32_t counter;
 void Init_Timers(void);
 
 osThreadDef(handlerThread, osPriorityAboveNormal, 1, 0);
+osThreadDef(gyroHandlerThread, osPriorityAboveNormal, 1, 0);
 osThreadDef(visioThread, osPriorityNormal, 1, 0);
 osMutexDef (accelBuffer_mutex);
+osMutexDef (gyroBuffer_mutex);
 
 int main() {
 	GPIO_InitTypeDef GPIO_InitDef;
@@ -25,17 +28,21 @@ int main() {
 	
 	/* driver init */
 	lsm303dlhc_init();
+	l3gd20_init();
 	
 	osKernelInitialize();
 	Init_Timers();
 	
 	
 	handlerThread_id = osThreadCreate(osThread(handlerThread), NULL);
+	gyroHandlerThread_id = osThreadCreate(osThread(gyroHandlerThread), NULL);
 	visioThread_id = osThreadCreate(osThread(visioThread), NULL);
+	
 	accelBuffer_mutex_id = osMutexCreate(osMutex(accelBuffer_mutex));
+	gyroBuffer_mutex_id = osMutexCreate(osMutex(gyroBuffer_mutex));
 	
 	// enable clock for GPIOE
-	__HAL_RCC_GPIOE_CLK_ENABLE();
+	//__HAL_RCC_GPIOE_CLK_ENABLE();
 
 	// init GPIO pin
 	GPIO_InitDef.Pin = GPIO_PIN_9;

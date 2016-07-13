@@ -53,7 +53,7 @@ static void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
   GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(LSM303DLHC_INT_PORT, &GPIO_InitStructure);
 	
-	HAL_NVIC_SetPriority(EXTI4_IRQn, 2, 0);
+	HAL_NVIC_SetPriority(EXTI4_IRQn, 2, 1);
   HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 	
 	

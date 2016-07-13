@@ -44,6 +44,8 @@
 
 #include <cmsis_os.h>
 #include <threads.h>
+#include <lsm303dlhc.h>
+#include <l3gd20.h>
 
 /** @addtogroup STM32F3xx_HAL_Examples
   * @{
@@ -180,6 +182,12 @@ void DebugMon_Handler(void)
 /*void PPP_IRQHandler(void)
 {
 }*/
+
+void EXTI1_IRQHandler(void) {
+	__HAL_GPIO_EXTI_CLEAR_FLAG(GPIO_PIN_1);
+	
+	osSignalSet(gyroHandlerThread_id, 0x02);
+}
 
 void EXTI4_IRQHandler(void) {
 	__HAL_GPIO_EXTI_CLEAR_FLAG(GPIO_PIN_4);
